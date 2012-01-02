@@ -1,0 +1,51 @@
+Useful Apache/C++ site:
+
+  http://zach.chambana.net/apache-cplusplus/
+  http://www.links.org/?p=264
+  http://www.mail-archive.com/bug-guile@gnu.org/msg05786.html
+
+C++ name mangling tool: c++filt
+
+C++ modules CANNOT be built as static modules, since a standard C compiler
+(not C++ compiler) is used to compile the proftpd executable.
+
+Example config:
+
+  # This fails because of a bug in libltdl where lt_dlopenext() does not try
+  # the ".dylib" extension after ".so" on Mac.  Should be fixed in later libtool
+  # versions.
+  #LoadFile /usr/lib/libstdc++
+
+  # Fails: "file not found"
+  #LoadFile /usr/lib/libstdc++.dylib
+
+  # Fails: "file not found"
+  #LoadFile /usr/lib/libstdc++.6.dylib
+
+  # Fails: "file not found"
+  #LoadFile /usr/lib/libstdc++.6.0.9.dylib
+
+# WORKS!  This works because libltdl can't handle loading libraries unless they
+# have a .so extension, so creating a .so symlink to the .dylib you want is the
+# workaround on MacOSX.  Not pretty, but it works.
+#
+# $ mkdir -p ~/tmp
+# $ cd ~/tmp
+# $ ln -s /usr/lib/libstdc++.dylib ./libstdc++.so
+LoadFile /Users/tj/tmp/libstdc++.so
+
+# NOTE: In order to get this to load (at least on MacOSX), use the
+# --disable-strip configure option.  Without this, the necessary symbol will
+# be stripped out of the .so at install-time (not sure why), which means
+# that libltdl won't find it when loading the module.
+#
+#  Some experimenting showed that the issue is not with stripping (or not)
+#  symbols from the module .so files at install time, as I had first suspected.
+#  Instead, it looks to be the stripping of the proftpd executable itself which
+#  causes the problem (at least on MacOSX).
+
+# And yes, I know it looks weird to see "mod_cppdemo.c" for a C++ module;
+# changing that requires some mod_dso updates.  (Make mod_dso accept
+# ".cc" and ".cpp", as well as ".c" extensions for module names?)
+LoadModule mod_cppdemo.c
+

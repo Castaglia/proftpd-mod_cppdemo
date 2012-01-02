@@ -1,0 +1,49 @@
+
+top_builddir=../..
+top_srcdir=../../
+srcdir=@srcdir@
+VPATH=@srcdir@
+
+include $(top_srcdir)/Make.rules
+
+.SUFFIXES: .la .lo
+
+SHARED_CFLAGS=-DPR_SHARED_MODULE
+SHARED_LDFLAGS=-avoid-version -export-dynamic -module
+
+MODULE_NAME=mod_cppdemo
+MODULE_OBJS=mod_cppdemo.o
+SHARED_MODULE_OBJS=mod_cppdemo.lo
+
+# Necessary redefinitions
+INCLUDES=-I. -I$(top_srcdir) -I$(top_srcdir)/include @INCLUDES@
+CPPFLAGS= $(ADDL_CPPFLAGS) -DHAVE_CONFIG_H $(DEFAULT_PATHS) $(PLATFORM) $(INCLUDES)
+LDFLAGS=-L$(top_builddir)/lib @LIBDIRS@ -lstdc++
+LIBS=@LIBS@ -lstdc++
+
+CC=gcc
+CXX=g++
+
+.cpp.o:
+	$(CXX) $(CPPFLAGS) $(CFLAGS) -c $<
+
+.cpp.lo:
+	$(LIBTOOL) --mode=compile --tag=CXX $(CXX) $(CPPFLAGS) $(CFLAGS) $(SHARED_CFLAGS) -c $<
+
+shared: $(SHARED_MODULE_OBJS)
+	$(LIBTOOL) --mode=link --tag=CXX $(CXX) -o $(MODULE_NAME).la $(SHARED_MODULE_OBJS) -rpath $(LIBEXECDIR) $(LDFLAGS) $(SHARED_LDFLAGS) $(LIBS)
+
+install:
+	if [ -f $(MODULE_NAME).la ]; then \
+		$(LIBTOOL) --mode=install --tag=CXX $(INSTALL_BIN) $(MODULE_NAME).la $(DESTDIR)$(LIBEXECDIR); \
+	fi
+
+clean:
+	$(LIBTOOL) --mode=clean $(RM) *.la
+	$(LIBTOOL) --mode=clean $(RM) *.lo
+	$(RM) config.*
+	$(RM) *.o
+
+distclean: clean
+
+.PHONY: all install clean distclean
