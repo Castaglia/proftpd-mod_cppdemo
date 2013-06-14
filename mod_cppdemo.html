@@ -1,0 +1,90 @@
+<html>
+<head>
+<title>ProFTPD module mod_cppdemo</title>
+</head>
+
+<body bgcolor=white>
+
+<hr>
+<center>
+<h2><b>ProFTPD module <code>mod_cppdemo</code></b></h2>
+</center>
+<hr><br>
+
+This module is contained in the <code>mod_cppdemo.cpp</code> file for
+ProFTPD 1.3.<i>x</i>, and is not compiled by default.  Installation
+instructions are discussed <a href="#Installation">here</a>.
+
+<p>
+The purpose of the <code>mod_cppdemo</code> module to demonstrate how
+one would write a ProFTPD module using C++.
+
+<p>
+The most current version of <code>mod_cppdemo</code> can be found at:
+<pre>
+  <a href="https://github.com/Castaglia/proftpd-mod_cppdemo.git">https://github.com/Castaglia/proftpd-mod_cppdemo.git</a>
+</pre>
+
+<h2>Author</h2>
+<p>
+Please contact TJ Saunders &lt;tj <i>at</i> castaglia.org&gt; with any
+questions, concerns, or suggestions regarding this module.
+
+<h2>Thanks</h2>
+<p>
+<i>2013-06-14</i>: Thanks to Juha Ranta &lt;jmtr <i>at</i> iki.fi&gt;
+for writing the original C++ module for <code>proftpd</code>.
+
+<p>
+<hr>
+<h2><a name="Installation">Installation</a></h2>
+To install <code>mod_cppdemo</code>, do:
+<pre>
+  $ cp -r proftpd-mod_cppdemo/ /path/to/proftpd/contrib/mod_cppdemo
+</pre>
+after unpacking the latest proftpd-1.3.<i>x</i> source code.  Any C++ module
+for <code>proftpd</code> <b>must</b> be built <i>as a shared module</i>,
+thus:
+<pre>
+  $ cd /path/to/proftpd/
+  $ ./configure --enable-dso --with-shared=mod_cppdemo ...
+</pre>
+Then follow the usual steps:
+<pre>
+  make
+  make install
+</pre>
+
+<p>
+You then need to tell the running <code>proftpd</code> to dynamically load
+the <code>mod_cppdemo</code> module in, using:
+<pre>
+  &lt;IfModule mod_dso.c&gt;
+    # Note that using the ".cpp" extension requires proftpd-1.3.5rc3 or later
+    LoadModule mod_cppdemo.cpp
+  &lt;/IfModule&gt;
+</pre>
+
+<p><a name="FAQ">
+<font color=red>Question</font>: Why do C++ modules have to be built as
+shared modules?<br>
+<font color=blue>Answer</font>: The main <code>proftpd</code> build system
+uses a C compiler (<i>e.g.</i> <code>gcc</code>), not a C++ compiler.  Thus
+C++ modules need to be built separately, as shared modules, which are then
+dynamically loaded via <code>mod_dso</code>.
+
+<p>
+<hr>
+Author: <i>$Author: tj $</i><br>
+Last Updated: <i>$Date: 2009/10/19 16:30:18 $</i><br>
+<hr>
+
+<font size=2><b><i>
+&copy; Copyright 2013 TJ Saunders<br>
+ All Rights Reserved<br>
+</i></b></font>
+
+<hr>
+</body>
+</html>
+
