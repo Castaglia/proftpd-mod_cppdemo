@@ -117,7 +117,7 @@ MODRET demo_cmd(cmd_rec *cmd) {
   // LIST mod_cppdemo::commands displays information commands issued in
   // this FTP session..
   //
-  // LIST mod_cppdemo::uptime displays information commands 
+  // LIST mod_cppdemo::info displays information commands 
   // 
   if (ftp_cmd == "LIST" || ftp_cmd == "NLST") {
     std::stringstream tmp;

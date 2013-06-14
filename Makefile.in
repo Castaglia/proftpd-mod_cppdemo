@@ -39,11 +39,11 @@ install:
 	fi
 
 clean:
+	$(RM) config.log *.o
 	$(LIBTOOL) --mode=clean $(RM) *.la
 	$(LIBTOOL) --mode=clean $(RM) *.lo
-	$(RM) config.*
-	$(RM) *.o
 
 distclean: clean
+	$(RM) -r RCS/ CVS/ .git/
 
 .PHONY: all install clean distclean
