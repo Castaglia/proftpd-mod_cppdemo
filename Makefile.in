@@ -17,12 +17,9 @@ SHARED_MODULE_OBJS=mod_cppdemo.lo
 
 # Necessary redefinitions
 INCLUDES=-I. -I$(top_srcdir) -I$(top_srcdir)/include @INCLUDES@
-CPPFLAGS= $(ADDL_CPPFLAGS) -DHAVE_CONFIG_H $(DEFAULT_PATHS) $(PLATFORM) $(INCLUDES)
+CPPFLAGS=$(ADDL_CPPFLAGS) -DHAVE_CONFIG_H $(DEFAULT_PATHS) $(PLATFORM) $(INCLUDES)
 LDFLAGS=-L$(top_builddir)/lib @LIBDIRS@ -lstdc++
 LIBS=@LIBS@ -lstdc++
-
-CC=gcc
-CXX=g++
 
 .cpp.o:
 	$(CXX) $(CPPFLAGS) $(CFLAGS) -c $<

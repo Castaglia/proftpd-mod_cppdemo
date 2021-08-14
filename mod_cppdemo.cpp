@@ -34,7 +34,7 @@
 extern "C" module cppdemo_module;
 extern pr_response_t *resp_list, *resp_err_list;
 
-#define FTP_CMD_NAME(cmdrec) (cmdrec ? (cmdrec->argv[0] ? cmdrec->argv[0] : "") : "")
+#define FTP_CMD_NAME(cmdrec) (cmdrec ? (cmdrec->argv[0] ? (char *) cmdrec->argv[0] : "") : "")
 #define FTP_CMD_ARG(cmdrec) (cmdrec ? (cmdrec->arg ? cmdrec->arg : "") : "")
 #define FOREACH(type, iter, container) for(type iter = (container).begin(); iter != (container).end(); iter++)
 
@@ -91,7 +91,7 @@ int demo_send_stream_data(const std::string& name, std::istream& input) {
 /* PRE_CMD handler
  */
 MODRET demo_pre_cmd(cmd_rec *cmd) {
-  pr_log_debug(DEBUG5, "cppdemo_pre_cmd(%s, %s)", cmd->argv[0], cmd->arg);
+  pr_log_debug(DEBUG5, "cppdemo_pre_cmd(%s, %s)", (char *) cmd->argv[0], cmd->arg);
 
   // collect some statistics
   std::string ftp_cmd = FTP_CMD_NAME(cmd);
@@ -104,7 +104,7 @@ MODRET demo_pre_cmd(cmd_rec *cmd) {
 /* CMD handler
  */
 MODRET demo_cmd(cmd_rec *cmd) {
-  pr_log_debug(DEBUG5, "cppdemo_cmd(%s, %s)", cmd->argv[0], cmd->arg);
+  pr_log_debug(DEBUG5, "cppdemo_cmd(%s, %s)", (char *) cmd->argv[0], cmd->arg);
 
   // trap 'LIST' for 'mod_cppdemo::statistics' 
   std::string ftp_cmd = FTP_CMD_NAME(cmd);
@@ -124,9 +124,9 @@ MODRET demo_cmd(cmd_rec *cmd) {
     int res = 0;
     if (ftp_arg == "mod_cppdemo::commands") {
       FOREACH(cmd_statistics_t::const_iterator, i, demo_commands) {
-        std::string cmd = i->first;
+        std::string cmd_str = i->first;
         int times = i->second;
-        tmp << "FTP-Command '" << cmd << "' executed " << times << " times." << std::endl;
+        tmp << "FTP-Command '" << cmd_str << "' executed " << times << " times." << std::endl;
       }       
 
       res = demo_send_stream_data("mod_cppdemo::commands", tmp);
@@ -160,7 +160,7 @@ MODRET demo_cmd(cmd_rec *cmd) {
 /* POST_CMD handler
  */
 MODRET demo_post_cmd(cmd_rec *cmd) {
-  pr_log_debug(DEBUG5, "cppdemo_post(%s, %s)", cmd->argv[0], cmd->arg);
+  pr_log_debug(DEBUG5, "cppdemo_post(%s, %s)", (char *) cmd->argv[0], cmd->arg);
 
   // by default, decline
   return PR_DECLINED(cmd);
@@ -171,7 +171,7 @@ MODRET demo_post_cmd(cmd_rec *cmd) {
 MODRET demo_log_handle(cmd_rec *cmd, const std::string& type) {
   pr_log_debug(DEBUG9, "cppdemo_log(cmd, %s)", type.c_str());
 
-  std::string command = (cmd->argv != NULL && cmd->argv[0] != NULL) ? cmd->argv[0] : "";
+  std::string command = (cmd->argv != NULL && cmd->argv[0] != NULL) ? (char *) cmd->argv[0] : "";
   std::string argument = cmd->arg != NULL ? cmd->arg : "";
 
   // collect all errors...
@@ -237,13 +237,10 @@ static int demo_sess_init(void) {
 }
 
 MODRET set_cppdemoconfig(cmd_rec *cmd) {
-  int b = 1;
-  config_rec *c = NULL;
-
   pr_log_debug(DEBUG3, "set_cppdemoconfig()");
 
   // Do something with config directive....
-  return HANDLED(cmd);
+  return PR_HANDLED(cmd);
 }
 
 /* Config parameters for this module
@@ -319,4 +316,3 @@ extern "C" {
     MOD_CPPDEMO_VERSION
   };
 };
-
