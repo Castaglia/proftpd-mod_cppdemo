@@ -68,7 +68,7 @@ jobs:
         if: ${{ matrix.container == 'almalinux:8' }}
         run: |
           # Need to add other repos for e.g. libsodium
-          yum install -y dnf-plugins-core epel-release yum-utils clang gcc make zlib-devel
+          yum install -y dnf-plugins-core epel-release yum-utils clang gcc gcc-c++ make zlib-devel
           dnf config-manager --enable epel
           dnf config-manager --set-enabled powertools
           # for unit tests
